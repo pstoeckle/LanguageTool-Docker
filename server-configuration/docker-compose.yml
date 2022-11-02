@@ -1,0 +1,19 @@
+version: "3.7"
+services:
+
+  language-tool:
+    image: gitlab.lrz.de:5005/i4/software/language-tool/language-tool:latest
+    restart: on-failure
+    expose:
+      - 8081
+
+  nginx:
+    image: gitlab.lrz.de:5005/i4/software/language-tool/nginx:latest
+    restart: always
+    ports:
+    - 80:80
+    - 443:443
+    depends_on:
+    - language-tool
+    volumes:
+    - ./certs/:/var/lib/rbg-cert/live/

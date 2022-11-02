@@ -1,0 +1,9 @@
+- hosts: servers
+  tasks:
+    - name: Start docker containers
+      ansible.builtin.command: 'docker compose -f docker-compose.yaml up --detach'
+      args:
+        chdir: '/home/ansible/language-tool/'
+      become: true
+      register: my_output
+      changed_when: my_output.rc != 0

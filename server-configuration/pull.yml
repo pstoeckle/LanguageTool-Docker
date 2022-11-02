@@ -1,0 +1,42 @@
+- hosts: servers
+  tasks:
+  - name: Install docker and docker compose
+    ansible.builtin.apt:
+      update_cache: true
+      name:
+        - docker-ce
+        - docker-ce-cli
+        - containerd.io
+        - docker-compose-plugin
+        - pass
+        - gnupg2
+      state: present
+    become: true
+  - name: Create directory
+    ansible.builtin.file:
+      path: '~/language-tool/'
+      state: directory
+      mode: '0700'
+  - name: Copy docker compose file
+    ansible.builtin.copy:
+      src: docker-compose.yml
+      dest: '~/language-tool/docker-compose.yaml'
+      mode: '0400'
+  - name: Login into GitLab Registry
+    community.docker.docker_login:
+      registry_url: gitlab.lrz.de:5005
+      username: '{{ docker_registry_user }}'
+      password: '{{ docker_registry_password }}'
+    become: true
+  - name: Pull the images
+    ansible.builtin.command: 'docker compose -f docker-compose.yaml pull'
+    args:
+      chdir: '/home/ansible/language-tool/'
+    become: true
+    register: my_output
+    changed_when: my_output.rc != 0
+  - name: Log out from GitLab Registry
+    community.docker.docker_login:
+      registry_url: gitlab.lrz.de:5005
+      state: absent
+    become: true
