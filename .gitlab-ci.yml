@@ -70,8 +70,8 @@ nginx:deploy:
       - nginx/conf.d/app.conf
   -   if: '$CI_COMMIT_TAG'
 
-publish:rgb-vm:
-  stage: publish
+setup:rgb-vm:
+  stage: setup
   image: gitlab.lrz.de:5005/i4/software/language-tool/ansible-ssh
   script:
     - mkdir -p ~/.ssh
@@ -87,3 +87,19 @@ publish:rgb-vm:
       changes:
       - .gitlab-ci.yml
   -   if: '$CI_COMMIT_TAG'
+
+publish:rgb-vm:
+  stage: publish
+  image: gitlab.lrz.de:5005/i4/software/language-tool/ansible-ssh
+  script:
+    - mkdir -p ~/.ssh
+    - chmod 700 ~/.ssh
+    - echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config
+    - echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
+    - chmod 600 ~/.ssh/id_rsa
+    - eval `ssh-agent`
+    - ssh-add ~/.ssh/id_rsa
+    - ansible-playbook --inventory ./server-configuration/hosts server-configuration/start.yml
+  rules:
+  -   if: '$CI_COMMIT_TAG'
+      when: manual
