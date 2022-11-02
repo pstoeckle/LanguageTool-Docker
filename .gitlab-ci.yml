@@ -37,6 +37,11 @@ language-tool:deploy:
   - cd language-tool || exit 1
   variables:
     IMAGE_NAME: $CI_REGISTRY_IMAGE/language-tool
+  rules:
+  -   if: '$CI_COMMIT_BRANCH == "development"'
+      changes:
+      - language-tool/Dockerfile
+  -   if: '$CI_COMMIT_TAG'
 
 nginx:deploy:
   <<: *docker
@@ -44,3 +49,9 @@ nginx:deploy:
   - cd nginx || exit 1
   variables:
     IMAGE_NAME: $CI_REGISTRY_IMAGE/nginx
+  rules:
+  -   if: '$CI_COMMIT_BRANCH == "development"'
+      changes:
+      - nginx/Dockerfile
+      - nginx/conf.d/app.conf
+  -   if: '$CI_COMMIT_TAG'
