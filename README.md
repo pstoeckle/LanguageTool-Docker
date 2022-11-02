@@ -4,7 +4,7 @@
 
 [LanguageTool](https://languagetool.org/) is a nice tool to check your text for typos and grammar errors.
 One main advantage above [Grammarly](https://app.grammarly.com/) is that LanguageTool also supports German and you can set up your own server.
-I did this under <lang.sse.cit.tum.de>.
+I did this under <https://lang.sse.cit.tum.de>.
 You can find all the code necessary to set up this server in this repository.
 
 ## References
