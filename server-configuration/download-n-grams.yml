@@ -1,0 +1,22 @@
+- hosts: servers
+  tasks:
+    - name: Install unzip
+      ansible.builtin.apt:
+        update_cache: true
+        name:
+          - unzip
+        state: present
+      become: true
+    - name: Create ngrams directory
+      ansible.builtin.file:
+        path: '~/language-tool/ngrams'
+        state: directory
+        mode: '0700'
+    - name: Download and unzip ngrams for English and German
+      ansible.builtin.unarchive:
+        src: "https://languagetool.org/download/ngram-data/{{ item }}.zip"
+        dest: '~/language-tool/ngrams/'
+        remote_src: yes
+      with_items:
+      - ngrams-en-20150817
+      - ngrams-de-20150819

@@ -6,9 +6,11 @@ services:
     restart: on-failure
     expose:
       - 8081
+    volumes:
+    - ./ngrams/:/ngrams/
 
   nginx:
-    image: gitlab.lrz.de:5005/i4/software/language-tool/nginx:latest
+    image: gitlab.lrz.de:5005/i4/software/language-tool/nginx:23cd6338
     restart: always
     ports:
     - 80:80
