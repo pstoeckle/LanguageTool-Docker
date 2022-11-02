@@ -1,5 +1,6 @@
 FROM amazoncorretto:8-alpine3.13-jre
 
+ARG COMMIT=""
 ARG COMMIT_SHORT=""
 ARG BRANCH=""
 ARG TAG=""
@@ -22,8 +23,11 @@ RUN apk update \
 WORKDIR /home/language-tool-user
 USER language-tool-user
 
-COPY --chown=language-tool-user LanguageTool-5.9 languagetool
+RUN wget -q https://languagetool.org/download/LanguageTool-stable.zip \
+    && unzip -qq LanguageTool-stable.zip \
+    && rm LanguageTool-stable.zip \
+    && mv LanguageTool-* languagetool
 
 WORKDIR /home/language-tool-user/languagetool
-
-CMD ["java", "-cp", "languagetool-server.jar", "org.languagetool.server.HTTPServer", "--port 8081", "--allow-origin"]
+EXPOSE 8081
+CMD ["java", "-cp", "languagetool-server.jar", "org.languagetool.server.HTTPServer", "--allow-origin", "--public"]
