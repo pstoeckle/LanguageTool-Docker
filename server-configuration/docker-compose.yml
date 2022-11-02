@@ -2,7 +2,7 @@ version: "3.7"
 services:
 
   language-tool:
-    image: gitlab.lrz.de:5005/i4/software/language-tool/language-tool:latest
+    image: gitlab.lrz.de:5005/i4/software/language-tool/language-tool:41b8f099
     restart: on-failure
     expose:
       - 8081
