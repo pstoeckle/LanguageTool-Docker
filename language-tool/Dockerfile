@@ -17,6 +17,7 @@ ENV BRANCH=${BRANCH}
 ENV TAG=${TAG}
 
 RUN apk update \
+    && apk add hunspell \
     && addgroup -S language-tool-group \
     && adduser -S language-tool-user -G language-tool-group
 
@@ -30,4 +31,4 @@ RUN wget -q https://languagetool.org/download/LanguageTool-stable.zip \
 
 WORKDIR /home/language-tool-user/languagetool
 EXPOSE 8081
-CMD ["java", "-cp", "languagetool-server.jar", "org.languagetool.server.HTTPServer", "--allow-origin", "--public"]
+CMD ["java", "-Xms128m", "-Xmx1024m", "-cp", "languagetool-server.jar", "org.languagetool.server.HTTPServer", "--allow-origin", "--public", "--languageModel", "/ngrams/"]
