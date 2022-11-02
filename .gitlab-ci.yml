@@ -1,74 +1,74 @@
 stages:
-- deploy
-- setup
-- publish
+  - deploy
+  - setup
+  - publish
 
 .docker_build: &docker
   stage: deploy
   image: docker:stable
   services:
-      - docker:18-dind
+    - docker:18-dind
   tags:
-      - docker
-      - privileged
+    - docker
+    - privileged
   variables:
-      DOCKER_DRIVER: overlay2
-      DOCKER_HOST: tcp://docker:2375
+    DOCKER_DRIVER: overlay2
+    DOCKER_HOST: tcp://docker:2375
   rules:
-  -   if: '$CI_COMMIT_BRANCH == "development"'
-  -   if: '$CI_COMMIT_TAG'
+    - if: '$CI_COMMIT_BRANCH == "development"'
+    - if: "$CI_COMMIT_TAG"
   needs: []
   script:
-  - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
-  - docker pull $IMAGE_NAME:latest || true
-  - docker build 
-      --build-arg=BRANCH=$CI_COMMIT_BRANCH 
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+    - docker pull $IMAGE_NAME:latest || true
+    - docker build
+      --build-arg=BRANCH=$CI_COMMIT_BRANCH
       --build-arg=COMMIT_SHORT=$CI_COMMIT_SHORT_SHA
-      --build-arg=COMMIT=$CI_COMMIT_SHA  
-      --build-arg=TAG=$CI_COMMIT_TAG 
-      --tag $IMAGE_NAME:$CI_COMMIT_REF_NAME 
-      --tag $IMAGE_NAME:$CI_COMMIT_SHA 
-      --tag $IMAGE_NAME:$CI_COMMIT_SHORT_SHA 
-      --tag $IMAGE_NAME:latest 
+      --build-arg=COMMIT=$CI_COMMIT_SHA
+      --build-arg=TAG=$CI_COMMIT_TAG
+      --tag $IMAGE_NAME:$CI_COMMIT_REF_NAME
+      --tag $IMAGE_NAME:$CI_COMMIT_SHA
+      --tag $IMAGE_NAME:$CI_COMMIT_SHORT_SHA
+      --tag $IMAGE_NAME:latest
       .
-  - docker push $IMAGE_NAME
+    - docker push $IMAGE_NAME
 
 language-tool:deploy:
   <<: *docker
   before_script:
-  - cd language-tool || exit 1
+    - cd language-tool || exit 1
   variables:
     IMAGE_NAME: $CI_REGISTRY_IMAGE/language-tool
   rules:
-  -   if: '$CI_COMMIT_BRANCH == "development"'
+    - if: '$CI_COMMIT_BRANCH == "development"'
       changes:
-      - language-tool/Dockerfile
-  -   if: '$CI_COMMIT_TAG'
+        - language-tool/Dockerfile
+    - if: "$CI_COMMIT_TAG"
 
 ansible-ssh:deploy:
   <<: *docker
   before_script:
-  - cd ansible-ssh || exit 1
+    - cd ansible-ssh || exit 1
   variables:
     IMAGE_NAME: $CI_REGISTRY_IMAGE/ansible-ssh
   rules:
-  -   if: '$CI_COMMIT_BRANCH == "development"'
+    - if: '$CI_COMMIT_BRANCH == "development"'
       changes:
-      - ansible-ssh/Dockerfile
-  -   if: '$CI_COMMIT_TAG'
+        - ansible-ssh/Dockerfile
+    - if: "$CI_COMMIT_TAG"
 
 nginx:deploy:
   <<: *docker
   before_script:
-  - cd nginx || exit 1
+    - cd nginx || exit 1
   variables:
     IMAGE_NAME: $CI_REGISTRY_IMAGE/nginx
   rules:
-  -   if: '$CI_COMMIT_BRANCH == "development"'
+    - if: '$CI_COMMIT_BRANCH == "development"'
       changes:
-      - nginx/Dockerfile
-      - nginx/conf.d/app.conf
-  -   if: '$CI_COMMIT_TAG'
+        - nginx/Dockerfile
+        - nginx/conf.d/app.conf
+    - if: "$CI_COMMIT_TAG"
 
 setup:rgb-vm:
   stage: setup
@@ -83,10 +83,10 @@ setup:rgb-vm:
     - ssh-add ~/.ssh/id_rsa
     - ansible-playbook --inventory ./server-configuration/hosts --extra-vars docker_registry_user=$CI_REGISTRY_USER --extra-vars docker_registry_password=$CI_REGISTRY_PASSWORD server-configuration/pull.yml
   rules:
-  -   if: '$CI_COMMIT_BRANCH == "development"'
+    - if: '$CI_COMMIT_BRANCH == "development"'
       changes:
-      - .gitlab-ci.yml
-  -   if: '$CI_COMMIT_TAG'
+        - .gitlab-ci.yml
+    - if: "$CI_COMMIT_TAG"
 
 publish:rgb-vm:
   stage: publish
@@ -101,5 +101,5 @@ publish:rgb-vm:
     - ssh-add ~/.ssh/id_rsa
     - ansible-playbook --inventory ./server-configuration/hosts server-configuration/start.yml
   rules:
-  -   if: '$CI_COMMIT_TAG'
+    - if: "$CI_COMMIT_TAG"
       when: manual
