@@ -2,7 +2,7 @@ version: "3.7"
 services:
 
   language-tool:
-    image: gitlab.lrz.de:5005/i4/software/language-tool/language-tool:41b8f099
+    image: gitlab.lrz.de:5005/i4/software/language-tool/language-tool:0.1.0
     restart: on-failure
     expose:
       - 8081
@@ -10,7 +10,7 @@ services:
     - ./ngrams/:/ngrams/
 
   nginx:
-    image: gitlab.lrz.de:5005/i4/software/language-tool/nginx:23cd6338
+    image: gitlab.lrz.de:5005/i4/software/language-tool/nginx:0.1.0
     restart: always
     ports:
     - 80:80
