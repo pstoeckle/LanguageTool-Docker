@@ -81,7 +81,9 @@ publish:rgb-vm:
     - chmod 600 ~/.ssh/id_rsa
     - eval `ssh-agent`
     - ssh-add ~/.ssh/id_rsa
-    - ansible-playbook --extra-vars docker_registry_user=$CI_REGISTRY_USER -e docker_registry_password=$CI_REGISTRY_PASSWORD server-configuration/pull.yml
+    - ansible-playbook --inventory ./server-configuration/hosts --extra-vars docker_registry_user=$CI_REGISTRY_USER --extra-vars docker_registry_password=$CI_REGISTRY_PASSWORD server-configuration/pull.yml
   rules:
+  -   if: '$CI_COMMIT_BRANCH == "development"'
+      changes:
+      - .gitlab-ci.yml
   -   if: '$CI_COMMIT_TAG'
-  -   when: manual
