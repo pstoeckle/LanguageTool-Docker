@@ -1,4 +1,4 @@
-# I4 Language Tool
+# I4 LanguageTool
 
 [[_TOC_]]
 
