@@ -45,18 +45,6 @@ language-tool:deploy:
         - language-tool/Dockerfile
     - if: "$CI_COMMIT_TAG"
 
-ansible-ssh:deploy:
-  <<: *docker
-  before_script:
-    - cd ansible-ssh || exit 1
-  variables:
-    IMAGE_NAME: $CI_REGISTRY_IMAGE/ansible-ssh
-  rules:
-    - if: '$CI_COMMIT_BRANCH == "development"'
-      changes:
-        - ansible-ssh/Dockerfile
-    - if: "$CI_COMMIT_TAG"
-
 nginx:deploy:
   <<: *docker
   before_script:
@@ -72,7 +60,7 @@ nginx:deploy:
 
 setup:rgb-vm:
   stage: setup
-  image: gitlab.lrz.de:5005/i4/software/language-tool/ansible-ssh
+  image: ghcr.io/pstoeckle/docker-images/ansible-ssh:0.1.5
   script:
     - mkdir -p ~/.ssh
     - chmod 700 ~/.ssh
@@ -91,7 +79,7 @@ setup:rgb-vm:
 
 publish:rgb-vm:
   stage: publish
-  image: gitlab.lrz.de:5005/i4/software/language-tool/ansible-ssh
+  image: ghcr.io/pstoeckle/docker-images/ansible-ssh:0.1.5
   script:
     - mkdir -p ~/.ssh
     - chmod 700 ~/.ssh
