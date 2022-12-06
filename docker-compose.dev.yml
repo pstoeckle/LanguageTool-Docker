@@ -1,0 +1,24 @@
+version: "3.7"
+services:
+
+  language-tool:
+    build: language-tool
+    restart: on-failure
+    expose:
+      - 8081
+    volumes:
+    - ./ngrams/:/ngrams/
+
+  nginx:
+    build: nginx
+    restart: always
+    ports:
+    - 80:80
+    - 443:443
+    depends_on:
+    - language-tool
+    volumes:
+    - type: bind
+      source: ./cert/localhost
+      target: /var/lib/rbg-cert/live/
+      read_only: true
