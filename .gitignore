@@ -26,3 +26,4 @@ __pycache__
 .vscode
 LanguageTool-5.9/
 .vault_password
+cert/
